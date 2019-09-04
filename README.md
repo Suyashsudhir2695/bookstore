@@ -10,6 +10,7 @@ This project is a scalable web application and an implementation of e-commerce b
 
 ## Known Issues
 * Can't track order yet (Working on it. I'll update the repository ASAP)
+* Non responsive web pages.
 
 ## Versioning
 * Initial Version
