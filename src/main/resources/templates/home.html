@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+
+    <link rel="stylesheet" type="text/css" href="src\main\resources\static\css\bootstrap.css" th:href="@{/css/bootstrap.css}">
+
+    <link rel="stylesheet" type="text/css" href="src\main\resources\static\css\style.css" th:href="@{/css/style.css}">
+
+    <!-- Compiled and minified JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script src="../js/custom.js"></script>
+    <!-- MDB core JavaScript -->
+
+    <title th:text="${user.username}"></title>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a th:if="${user} == null" class="nav-link" href="#" th:href="@{/login}">Sign In</a>
+                <a class="nav-link" th:if="${user} != null" href="#" th:href="@{/home}" th:text="'Hello, '+${user.username}"></a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Dropdown
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" th:href="@{/home/cart}" tabindex="-1" >Cart</a>
+            </li>
+        </ul>
+        <form action="#" th:action="@{/search}" class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="search"
+                   name="search" th:object="${search}">
+            <button class="btn btn-light" type="submit"><span>Search</span></button>
+        </form>
+    </div>
+</nav>
+<form th:action="@{/logout}" method="get">
+    <button class="btn btn-md btn-danger btn-block" name="registration"
+            type="Submit">Logout
+    </button>
+</form>
+
+    <p class="admin-message-text text-center" th:text="${user.username}"></p>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Account</a>
+                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Orders</a>
+                    <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Wish Lists</a>
+                    <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Wallet</a>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                        <!-- Button trigger modal -->
+
+                        <table class="table table-borderless">
+
+                            <tbody>
+                            <tr>
+
+                                <th >Username</th>
+                                <td th:text="${user.username}"></td>
+                                <td><i class="far fa-edit" data-toggle="modal" data-target="#exampleModal"></i> </td>
+
+                            </tr>
+                            <tr>
+
+                                <th > Phone</th>
+                                <td th:text="${user.phone}"></td>
+                                <td><i class="far fa-edit" data-toggle="modal" data-target="#exampleModal"></i> </td>
+
+                            </tr>
+                            <tr>
+                                <th>Address</th>
+                                <td th:text="${user.address}"></td>
+                                <td><i class="far fa-edit" data-toggle="modal" data-target="#exampleModal"></i> </td>
+                            </tr>
+                            <tr>
+
+
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ...
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">Fugiat id quis dolor culpa eiusmod anim velit excepteur proident dolor aute qui magna. Ad proident laboris ullamco esse anim Lorem Lorem veniam quis Lorem irure occaecat velit nostrud magna nulla. Velit et et proident Lorem do ea tempor officia dolor. Reprehenderit Lorem aliquip labore est magna commodo est ea veniam consectetur.</div>
+                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">Eu dolore ea ullamco dolore Lorem id cupidatat excepteur reprehenderit consectetur elit id dolor proident in cupidatat officia. Voluptate excepteur commodo labore nisi cillum duis aliqua do. Aliqua amet qui mollit consectetur nulla mollit velit aliqua veniam nisi id do Lorem deserunt amet. Culpa ullamco sit adipisicing labore officia magna elit nisi in aute tempor commodo eiusmod.</div>
+                    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                        <h2>Your Wallet balance is </h2>
+                        <div class="order-info-box" >
+                            <h1 th:text="'₹ '+${user.wallet}"></h1>
+                        </div>
+                        <button type="button" class="site-btn" data-toggle="modal" data-target="#walletAddModal">Add Balance</button>
+
+
+
+                        <div class="modal fade" id="walletAddModal" tabindex="-1" role="dialog" aria-labelledby="walletAddModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="walletAddModalLabel">Add Balance to your Wallet</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <form id="walletForm" method="post" th:action="@{/home/wallet/checkout/process}">
+
+
+
+                                        <div class="form-group">
+                                            <label for="inputWalletBal">Enter Amount</label>
+                                            <input type="number" class="form-control" id="inputWalletBal" name="inputWalletBal" placeholder="Enter Amount">
+                                        </div>
+                                            <button type="submit"  onclick="form_submit()" class="btn btn-primary">Save changes</button>
+                                        </form>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+<script>
+    function form_submit() {
+        document.getElementById("walletForm").submit();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+$primaryColor : #689F38;
+$accentColor: #EBB62F;
+$bg: linear-gradient(to right, #fcba03 0%, #7efa02 100%), radial-gradient(circle at top left, #fcba03, #7efa02);
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito', sans-serif;
+
+
+  nav {
+    background-image: linear-gradient(to right, #fcba03 0%, #7efa02 100%), radial-gradient(circle at top left, #fcba03, #7efa02);
+   // color: black;
+    border: double 2px transparent;
+    box-shadow: 0px 10px 30px rgba(118, 85, 225, 0.3);
+    .navbar{
+      padding: 82px 5px !important;
+      .nav-link a{
+        margin-right: 20px !important;
+      }
+    }
+
+
+  }
+  .success-alert{
+    font-family: 'Nunito', sans-serif;
+
+    //border: 2px transparent $primaryColor;
+    margin: 100px auto;
+    height: auto;
+    text-align: center;
+    padding: 15px;
+    width: 400px;
+    color: #000;
+    background: #f2f2f2;
+    font-size: 20px;
+    font-weight: normal;
+    //border-radius: 10px;
+    //transform: translateX(40%);
+    box-shadow: 1px 1px 2px 0 rgba($color: #000000, $alpha: 0.4);
+    transition: 0.4;
+  }
+
+  .order-info-box{
+    box-shadow: 1px 1px 2px 0 rgba($color: #000000, $alpha: 0.4);
+    margin: 50px auto;
+    width: 500px;
+    height: auto;
+    color: black;
+    background: #f2f2f2;
+    transition: 0.4;
+    font-size: 15px;
+    align-content: center;
+    padding: 15px;
+  }
+
+  .login-box {
+    box-shadow: 2px 2px 4px 2px rgba($color: #000000, $alpha: 0.4);
+    transition: 0.3;
+    width: 350px;
+    height: auto;
+    padding: 30px;
+    transform: translate(110%, 30%);
+    border-radius: 7px;
+    button{
+      width: 100%;
+    }
+
+  }
+
+  .book-box {
+    box-shadow: 0 0 4px 1px rgba($color: #000000, $alpha: 0.4);
+    transition: 0.4;
+
+    width: 100%;
+    height: auto;
+    margin: 15px;
+    padding: 25px;
+    border-radius: 5px;
+
+
+
+   .book-image{
+     float: left;
+     height: 100%;
+     width: 25%;
+     margin-right: 20px;
+     img {
+       float: left;
+       width: 100%;
+       height: auto;
+
+     }
+   }
+
+    .book-details {
+      height: 100%;
+      width: 70%;
+      padding: 25px;
+
+      li {
+        list-style: none;
+        display: inline;
+        margin-right: 20px;
+        margin-left: 20px;
+
+
+        a {
+          text-decoration: none;
+
+        }
+      }
+    }
+
+  }
+
+
+
+  .form-div-book {
+    margin-top: 50px;
+    align-self: center;
+    box-shadow: 2px 2px 4px 2px rgba($color: #000000, $alpha: 0.4);
+    transition: 0.4s;
+    padding: 15px;
+    height: auto;
+    width: 100%;
+    border-radius: 7px;
+    border: 1px solid #f2f2f2;
+  }
+
+  .site-btn{
+    text-decoration: none;
+    display: inline-block;
+    color: #000;
+    letter-spacing: 0px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 46px;
+    outline: none !important;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 5px;
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    background-image: linear-gradient(to right, #fcba03 0%, #7efa02 100%), radial-gradient(circle at top left, #fcba03, #7efa02);
+    border: double 2px transparent;
+    box-shadow: 0px 10px 30px rgba(126, 250, 2, 0.3);
+    span{
+      padding: 0 42px;
+      font-weight: 200;
+    }
+    .tr-bg{
+      background-image: linear-gradient(#ffffff, #ffffff), radial-gradient(circle at top left, #fcba03, #7efa02);
+      border: 2px solid transparent;
+      color: #222222;
+      box-shadow: 0px 10px 30px rgba(126, 250, 2, 0.3);
+
+    }
+
+  }
+
+  .site-btn-search{
+    text-decoration: none;
+    display: inline-block;
+    color: #000;
+    letter-spacing: 0px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 46px;
+    outline: none !important;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 5px;
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    background: white !important;
+    border: double 2px transparent;
+    box-shadow: 0px 10px 30px rgba(118, 85, 225, 0.3);
+    span{
+      padding: 0 15px;
+      font-weight: 200;
+    }
+
+    .tr-bg{
+      background: white;
+      border: 2px solid transparent;
+      color: #000;
+      box-shadow: 0px 10px 30px rgba(118, 85, 225, 0.3);
+
+    }
+
+  }
+
+}

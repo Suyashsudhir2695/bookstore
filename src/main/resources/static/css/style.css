@@ -1,0 +1,162 @@
+@import url("https://fonts.googleapis.com/css?family=Nunito&display=swap");
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Nunito", sans-serif;
+}
+body nav {
+  background-image: linear-gradient(to right, #fcba03 0%, #7efa02 100%), radial-gradient(circle at top left, #fcba03, #7efa02);
+  border: double 2px transparent;
+  box-shadow: 0px 10px 30px rgba(118, 85, 225, 0.3);
+}
+body nav .navbar {
+  padding: 82px 5px !important;
+}
+body nav .navbar .nav-link a {
+  margin-right: 20px !important;
+}
+body .success-alert {
+  font-family: "Nunito", sans-serif;
+  margin: 100px auto;
+  height: auto;
+  text-align: center;
+  padding: 15px;
+  width: 400px;
+  color: #000;
+  background: #f2f2f2;
+  font-size: 20px;
+  font-weight: normal;
+  box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.4);
+  transition: 0.4;
+}
+body .order-info-box {
+  box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.4);
+  margin: 50px auto;
+  width: 500px;
+  height: auto;
+  color: black;
+  background: #f2f2f2;
+  transition: 0.4;
+  font-size: 15px;
+  align-content: center;
+  padding: 15px;
+}
+body .login-box {
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.4);
+  transition: 0.3;
+  width: 350px;
+  height: auto;
+  padding: 30px;
+  transform: translate(110%, 30%);
+  border-radius: 7px;
+}
+body .login-box button {
+  width: 100%;
+}
+body .book-box {
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.4);
+  transition: 0.4;
+  width: 100%;
+  height: auto;
+  margin: 15px;
+  padding: 25px;
+  border-radius: 5px;
+}
+body .book-box .book-image {
+  float: left;
+  height: 100%;
+  width: 25%;
+  margin-right: 20px;
+}
+body .book-box .book-image img {
+  float: left;
+  width: 100%;
+  height: auto;
+}
+body .book-box .book-details {
+  height: 100%;
+  width: 70%;
+  padding: 25px;
+}
+body .book-box .book-details li {
+  list-style: none;
+  display: inline;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+body .book-box .book-details li a {
+  text-decoration: none;
+}
+body .form-div-book {
+  margin-top: 50px;
+  align-self: center;
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.4);
+  transition: 0.4s;
+  padding: 15px;
+  height: auto;
+  width: 100%;
+  border-radius: 7px;
+  border: 1px solid #f2f2f2;
+}
+body .site-btn {
+  text-decoration: none;
+  display: inline-block;
+  color: #000;
+  letter-spacing: 0px;
+  font-family: "Nunito", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 46px;
+  outline: none !important;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  border-radius: 5px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  background-image: linear-gradient(to right, #fcba03 0%, #7efa02 100%), radial-gradient(circle at top left, #fcba03, #7efa02);
+  border: double 2px transparent;
+  box-shadow: 0px 10px 30px rgba(126, 250, 2, 0.3);
+}
+body .site-btn span {
+  padding: 0 42px;
+  font-weight: 200;
+}
+body .site-btn .tr-bg {
+  background-image: linear-gradient(#ffffff, #ffffff), radial-gradient(circle at top left, #fcba03, #7efa02);
+  border: 2px solid transparent;
+  color: #222222;
+  box-shadow: 0px 10px 30px rgba(126, 250, 2, 0.3);
+}
+body .site-btn-search {
+  text-decoration: none;
+  display: inline-block;
+  color: #000;
+  letter-spacing: 0px;
+  font-family: "Nunito", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 46px;
+  outline: none !important;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  border-radius: 5px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  background: white !important;
+  border: double 2px transparent;
+  box-shadow: 0px 10px 30px rgba(118, 85, 225, 0.3);
+}
+body .site-btn-search span {
+  padding: 0 15px;
+  font-weight: 200;
+}
+body .site-btn-search .tr-bg {
+  background: white;
+  border: 2px solid transparent;
+  color: #000;
+  box-shadow: 0px 10px 30px rgba(118, 85, 225, 0.3);
+}
+
+/*# sourceMappingURL=style.css.map */

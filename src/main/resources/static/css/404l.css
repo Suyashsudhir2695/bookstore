@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css?family=Nunito&display=swap");
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+}
+body .container {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -80%);
+  transform: translate(-50%, -80%);
+}
+body .container .not-found {
+  margin: 25px;
+}
+body h1 {
+  font-size: 100px;
+  font-weight: bolder;
+}
+body h2 {
+  font-size: 30px;
+  font-weight: lighter;
+}
+body .site-btn {
+  text-decoration: none;
+  display: inline-block;
+  color: #000;
+  letter-spacing: 0px;
+  font-family: "Nunito", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 46px;
+  outline: none !important;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  border-radius: 5px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  background-image: linear-gradient(to right, #fcba03 0%, #7efa02 100%), radial-gradient(circle at top left, #fcba03, #7efa02);
+  border: double 2px transparent;
+  box-shadow: 0px 10px 30px rgba(126, 250, 2, 0.3);
+}
+body .site-btn span {
+  padding: 0 42px;
+  font-weight: bolder;
+}
+body .site-btn .tr-bg {
+  background-image: linear-gradient(#ffffff, #ffffff), radial-gradient(circle at top left, #fcba03, #7efa02);
+  border: 2px solid transparent;
+  color: #222222;
+  box-shadow: 0px 10px 30px rgba(126, 250, 2, 0.3);
+}
+
+/*# sourceMappingURL=404l.css.map */
