@@ -8,9 +8,14 @@ This project is a scalable web application and an implementation of e-commerce b
 * Put your PayTM **MID** and **Merchant Key**
 * Build Project
 
+## Sample Users
+username: suyash, password: suyash, role: admin
+username: poi, password: poi, role:user
+
+
 ## Known Issues
 * Can't track order yet (Working on it. I'll update the repository ASAP)
-
+* Registration
 
 ## Versioning
 * Initial Version
