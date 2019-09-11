@@ -143,7 +143,39 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">Fugiat id quis dolor culpa eiusmod anim velit excepteur proident dolor aute qui magna. Ad proident laboris ullamco esse anim Lorem Lorem veniam quis Lorem irure occaecat velit nostrud magna nulla. Velit et et proident Lorem do ea tempor officia dolor. Reprehenderit Lorem aliquip labore est magna commodo est ea veniam consectetur.</div>
-                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">Eu dolore ea ullamco dolore Lorem id cupidatat excepteur reprehenderit consectetur elit id dolor proident in cupidatat officia. Voluptate excepteur commodo labore nisi cillum duis aliqua do. Aliqua amet qui mollit consectetur nulla mollit velit aliqua veniam nisi id do Lorem deserunt amet. Culpa ullamco sit adipisicing labore officia magna elit nisi in aute tempor commodo eiusmod.</div>
+                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
+                         aria-labelledby="v-pills-messages-tab">
+                        <div align="center" th:if="${cartSize} == 0" class="col-lg-12">
+
+                            <div class="order-info-box"><h3 align="center">Your Wish List is empty</h3></div>
+                            <a class="site-btn" th:href="@{/}"><span>Browse Books</span></a>
+
+                        </div>
+                        <div th:if="${cartSize} > 0" th:each="book : ${favs}" class="book-box">
+
+
+                            <div class="book-image">
+                                <img src="" th:src="${book.image}" alt="">
+                            </div>
+
+
+                            <div class="book-details">
+                                <h5 th:text="${book.name}"></h5>
+                                <h6 th:text="${book.author}"></h6>
+                                <h6 th:text="${book.publisher}"></h6>
+                                <h6 th:text="'₹ '+${book.price}"></h6>
+                                <h6 th:text="${book.year}"></h6>
+                                <ul style="display: inline-block">
+                                    <li>
+                                        <a th:href="@{'/details/' + ${book.id}}"
+                                           class="site-btn"><span>Details</span></a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
                     <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
                         <h2>Your Wallet balance is </h2>
                         <div class="order-info-box" >

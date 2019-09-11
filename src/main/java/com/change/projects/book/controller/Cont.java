@@ -1,19 +1,10 @@
 package com.change.projects.book.controller;
 
 import com.change.projects.book.common.Common;
-import com.change.projects.book.model.Books;
-import com.change.projects.book.model.Cart;
-import com.change.projects.book.model.User;
-import com.change.projects.book.service.BookService;
-import com.change.projects.book.service.CartService;
-import com.change.projects.book.service.UserServiceImpl;
+import com.change.projects.book.model.*;
+import com.change.projects.book.service.*;
+import com.change.projects.book.validator.UserValidator;
 import com.paytm.pg.merchant.CheckSumServiceHelper;
-import com.sun.org.apache.xpath.internal.operations.Mod;
-import org.hibernate.resource.beans.container.internal.CdiBeanContainerImmediateAccessImpl;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.security.core.Authentication;
@@ -22,57 +13,54 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.jws.WebParam;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 
 @RestController
-public class Cont {
+public class Cont implements ErrorController {
 
-    public static final String MID = "<your key here>";
+    public static final String MID = "sSEGQF55550943818827";
     public static final String INDUSTRY_TYPE_ID = "Retail";
     public static final String CHANNEL_ID = "WEB";
     public static final String WEBSITE = "WEBSTAGING";
     public static final String CALLBACK_URL = "http://localhost:8080/transaction/pgresponse";
     public static final String WALLET_CALLBACK_URL = "http://localhost:8080/transaction/wallet/pgresponse";
-    public static final String MERCHANT_KEY = "<your key here>";
+    public static final String MERCHANT_KEY = "94umYxE0nh0j3U7i";
     public static final String CS = Common.generateCheckSum();
 
     @Autowired
-    BookService service;
+    BookService bookService;
 
     @Autowired
     UserServiceImpl userService;
     @Autowired
     CartService cartService;
 
+    @Autowired
+    UserValidator validator;
+
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
+    FavouritesService favouritesService;
+
     @RequestMapping("/")
     public ModelAndView getBooks(Model model) {
 
         ModelAndView modelAndView = new ModelAndView();
-        List<Books> books = service.getAllBooks();
+        List<Books> books = bookService.getAllBooks();
         System.out.println(books);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Common.currentUser = userService.findByUsername(auth.getName());
-       if (Common.currentUser != null){
-           model.addAttribute("user", Common.currentUser);
-       }
+        if (Common.currentUser != null) {
+            model.addAttribute("user", Common.currentUser);
+        }
 
         model.addAttribute("books", books);
 
@@ -94,14 +82,14 @@ public class Cont {
     @RequestMapping(value = "/admin/save", method = RequestMethod.POST)
     public ModelAndView saveBook(@ModelAttribute("book") Books books) {
         ModelAndView modelAndView = new ModelAndView();
-        service.saveBook(books);
+        bookService.saveBook(books);
         modelAndView.setViewName("redirect:/");
         return modelAndView;
     }
 
     @RequestMapping("/admin/delete/{id}")
     public ModelAndView deleteProduct(@PathVariable(name = "id") int id) {
-        service.delete(id);
+        bookService.delete(id);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/");
         return modelAndView;
@@ -114,7 +102,7 @@ public class Cont {
 
         try {
 
-            searchList = service.findBooksByName(term);
+            searchList = bookService.findBooksByName(term);
 
 
         } catch (Exception e) {
@@ -132,13 +120,18 @@ public class Cont {
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     ModelAndView home(Model model) {
         ModelAndView modelAndView = new ModelAndView();
-
-        //model.addAttribute()
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(auth.getName());
+        Common.currentUser = user;
+        List<Favourites> favourites = favouritesService.findByUserEmail(Common.currentUser.getUsername());
+        model.addAttribute("favs", favourites);
+
+        model.addAttribute("cartSize", favourites.size());
+        //model.addAttribute()
+
         model.addAttribute("user", user);
         System.out.println("This is User " + user);
-        Common.currentUser = user;
+
         System.out.println(Common.currentUser.getUsername());
         modelAndView.setViewName("home");
         return modelAndView;
@@ -149,11 +142,10 @@ public class Cont {
         ModelAndView modelAndView = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(auth.getName());
-        if (Common.currentUser != null){
+        if (Common.currentUser != null) {
             model.addAttribute("user", user);
             modelAndView.setViewName("redirect:/home");
-        }
-        else {
+        } else {
 
 
             System.out.println("This is User " + user);
@@ -163,19 +155,45 @@ public class Cont {
 
     }
 
+    @RequestMapping("/register")
+    public ModelAndView register(Model model) {
+        ModelAndView modelAndView = new ModelAndView();
+        model.addAttribute("user", new User());
+        modelAndView.setViewName("registration");
 
-//
-//    @RequestMapping()
-//    public ModelAndView home(){
-//        ModelAndView modelAndView = new ModelAndView();
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User user = userService.findByUsername(auth.getName());
-//        System.out.println("This is user"+ user);
-////        modelAndView.addObject("userName", "Welcome " + user.getUsername());
-////        modelAndView.addObject("adminMessage","Content Available Only for Users with Admin Role");
-//        modelAndView.setViewName("home");
-//        return modelAndView;
-    //   }
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public ModelAndView registerUser(@ModelAttribute("user") User user) {
+        ModelAndView modelAndView = new ModelAndView();
+
+        User existingUser = userService.findByUsername(user.getUsername());
+        if (existingUser != null) {
+            modelAndView.addObject("error", "true");
+
+        } else {
+            if (user.getPassword().equals(user.getPasswordConfirm())) {
+                Role role = roleService.findByName("USER");
+                user.setRoles(new HashSet<>(Collections.singletonList(role)));
+                userService.save(user);
+                modelAndView.addObject("saved", "true");
+            } else {
+                modelAndView.addObject("passwordMatch", "false");
+            }
+
+        }
+
+
+        modelAndView.setViewName("registration");
+
+
+        return modelAndView;
+
+    }
+
+
+
 
     @RequestMapping(value = {"/logout"}, method = RequestMethod.POST)
     public String logoutDo(HttpServletRequest request, HttpServletResponse response) {
@@ -205,7 +223,7 @@ public class Cont {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Common.currentUser = userService.findByUsername(auth.getName());
 
-        Books book = service.getBook(id);
+        Books book = bookService.getBook(id);
         Common.currentBook = book;
         System.out.println(Common.currentBook.getName());
         model.addAttribute("user", Common.currentUser);
@@ -216,8 +234,29 @@ public class Cont {
 
     }
 
+    @PostMapping("/buildfavs")
+    ModelAndView buildFavourites(Model model) {
+        ModelAndView modelAndView = new ModelAndView();
+        Favourites favourites = new Favourites();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Common.currentUser = userService.findByUsername(auth.getName());
+        favourites.setUserEmail(Common.currentUser.getUsername());
+        favourites.setName(Common.currentBook.getName());
+        favourites.setAuthor(Common.currentBook.getAuthor());
+        favourites.setPublisher(Common.currentBook.getPublisher());
+        favourites.setPrice(Common.currentBook.getPrice());
+        favourites.setYear(Common.currentBook.getYear());
+        favourites.setImage(Common.currentBook.getImage());
+        model.addAttribute("fav", favourites);
+
+        favouritesService.saveFavs(favourites);
+        //modelAndView.addObject("saved","true");
+        modelAndView.setViewName("redirect:/details/" + Common.currentBook.getId() + "?saved=true");
+        return modelAndView;
+    }
+
     @RequestMapping(value = "/buildCart", method = RequestMethod.POST)
-    ModelAndView buildcart(@RequestParam("qty") int qty,  Model model) {
+    ModelAndView buildcart(@RequestParam("qty") int qty, Model model) {
         ModelAndView modelAndView = new ModelAndView();
         Cart cart = new Cart();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -238,15 +277,14 @@ public class Cont {
         }
 
 
-
         System.out.println(Common.currentUser.getUsername() + "         " + Common.currentBook.getName());
 
 
         model.addAttribute("message", "Success");
         model.addAttribute("alertClass", "alert-success");
-        modelAndView.addObject("added","true");
+        //modelAndView.addObject("added", "true");
 
-        modelAndView.setViewName("redirect:/details/" + Common.currentBook.getId());
+        modelAndView.setViewName("redirect:/details/" + Common.currentBook.getId() + "?added=true");
 
         return modelAndView;
 
@@ -254,40 +292,35 @@ public class Cont {
     }
 
     @RequestMapping(value = "/home/cart", method = RequestMethod.GET)
-    ModelAndView showCart(Model model,@RequestParam(value = "em", required = false) String em) throws Exception {
+    ModelAndView showCart(Model model, @RequestParam(value = "em", required = false) String em) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Common.currentUser = userService.findByUsername(auth.getName());
         List<Cart> cart = cartService.getCart(Common.currentUser.getUsername());
-        model.addAttribute("cartSize" ,cart.size());
+        model.addAttribute("cartSize", cart.size());
         model.addAttribute("user", Common.currentUser);
 
 
-
-      if (cart.size() != 0 ){
-          model.addAttribute("cart", cart);
-
+        if (cart.size() != 0) {
+            model.addAttribute("cart", cart);
 
 
-          float total = (float) cartService.getTotal(Common.currentUser.getUsername());
-          int cartCount = cartService.getCartCount(Common.currentUser.getUsername());
+            float total = (float) cartService.getTotal(Common.currentUser.getUsername());
+            int cartCount = cartService.getCartCount(Common.currentUser.getUsername());
 
 
+            model.addAttribute("cnt", cartCount);
 
-          model.addAttribute("cnt",cartCount);
-
-          model.addAttribute("total", total);
-          model.addAttribute("rt",CS);
-
-
-          model.addAttribute("errorMsg",em);
-      }
-      else{
-          System.out.println("cart is empty");
+            model.addAttribute("total", total);
+            model.addAttribute("rt", CS);
 
 
+            model.addAttribute("errorMsg", em);
+        } else {
+            System.out.println("cart is empty");
 
-      }
+
+        }
 
 
         modelAndView.setViewName("cart");
@@ -296,18 +329,18 @@ public class Cont {
         return modelAndView;
     }
 
-//    @RequestMapping("/error")
-//    ModelAndView showwhiteerror() {
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("404");
-//        return modelAndView;
-//
-//    }
+    @RequestMapping("/error")
+    ModelAndView showwhiteerror() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("404");
+        return modelAndView;
 
-//    @Override
-//    public String getErrorPath() {
-//        return "/error";
-//    }
+    }
+
+    @Override
+    public String getErrorPath() {
+        return "/error";
+    }
 
     @RequestMapping(value = "/home/cart/checkout/process", method = RequestMethod.POST)
     public ModelAndView processPayment(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -321,32 +354,32 @@ public class Cont {
         StringBuilder sb = null;
 
         float total = (float) cartService.getTotal(Common.currentUser.getUsername());
-        paytmParams.put("CALLBACK_URL",CALLBACK_URL);
-        paytmParams.put("CHANNEL_ID",CHANNEL_ID);
-        paytmParams.put("CUST_ID",Common.currentUser.getId().toString());
-        paytmParams.put("EMAIL","testt@gmail.com");
-        paytmParams.put("INDUSTRY_TYPE_ID",INDUSTRY_TYPE_ID);
-        paytmParams.put("MID",MID);
-        paytmParams.put("MOBILE_NO","4558852");
-        paytmParams.put("ORDER_ID",orderId);
-        paytmParams.put("TXN_AMOUNT",String.valueOf(total));
-        paytmParams.put("WEBSITE",WEBSITE);
+        paytmParams.put("CALLBACK_URL", CALLBACK_URL);
+        paytmParams.put("CHANNEL_ID", CHANNEL_ID);
+        paytmParams.put("CUST_ID", Common.currentUser.getId().toString());
+        paytmParams.put("EMAIL", "testt@gmail.com");
+        paytmParams.put("INDUSTRY_TYPE_ID", INDUSTRY_TYPE_ID);
+        paytmParams.put("MID", MID);
+        paytmParams.put("MOBILE_NO", "4558852");
+        paytmParams.put("ORDER_ID", orderId);
+        paytmParams.put("TXN_AMOUNT", String.valueOf(total));
+        paytmParams.put("WEBSITE", WEBSITE);
 
 
-        String checkSum =  CheckSumServiceHelper.getCheckSumServiceHelper().genrateCheckSum(MERCHANT_KEY, paytmParams);
+        String checkSum = CheckSumServiceHelper.getCheckSumServiceHelper().genrateCheckSum(MERCHANT_KEY, paytmParams);
 
 
-        model.addAttribute("CALLBACK_URL",CALLBACK_URL);
-        model.addAttribute("CHANNEL_ID",CHANNEL_ID);
-        model.addAttribute("CUST_ID",String.valueOf(Common.currentUser.getId()));
-        model.addAttribute("EMAIL","testt@gmail.com");
-        model.addAttribute("INDUSTRY_TYPE_ID",INDUSTRY_TYPE_ID);
-        model.addAttribute("MID",MID);
-        model.addAttribute("MOBILE_NO",4558852);
+        model.addAttribute("CALLBACK_URL", CALLBACK_URL);
+        model.addAttribute("CHANNEL_ID", CHANNEL_ID);
+        model.addAttribute("CUST_ID", String.valueOf(Common.currentUser.getId()));
+        model.addAttribute("EMAIL", "testt@gmail.com");
+        model.addAttribute("INDUSTRY_TYPE_ID", INDUSTRY_TYPE_ID);
+        model.addAttribute("MID", MID);
+        model.addAttribute("MOBILE_NO", 4558852);
         model.addAttribute("ORDER_ID", orderId);
-        model.addAttribute("TXN_AMOUNT",String.valueOf(total));
-        model.addAttribute("WEBSITE",WEBSITE);
-        model.addAttribute("CHECKSUMHASH",checkSum);
+        model.addAttribute("TXN_AMOUNT", String.valueOf(total));
+        model.addAttribute("WEBSITE", WEBSITE);
+        model.addAttribute("CHECKSUMHASH", checkSum);
         // model.addAllAttributes(paytmParams);
 
 
@@ -355,8 +388,6 @@ public class Cont {
 
 
     }
-
-
 
 
     @RequestMapping(value = "/home/wallet/checkout/process", method = RequestMethod.POST)
@@ -371,32 +402,32 @@ public class Cont {
         StringBuilder sb = null;
 
 //        float total = (float) cartService.getTotal(Common.currentUser.getUsername());
-        paytmParams.put("CALLBACK_URL",WALLET_CALLBACK_URL);
-        paytmParams.put("CHANNEL_ID",CHANNEL_ID);
-        paytmParams.put("CUST_ID",Common.currentUser.getId().toString());
-        paytmParams.put("EMAIL","testt@gmail.com");
-        paytmParams.put("INDUSTRY_TYPE_ID",INDUSTRY_TYPE_ID);
-        paytmParams.put("MID",MID);
-        paytmParams.put("MOBILE_NO","4558852");
-        paytmParams.put("ORDER_ID",orderId);
-        paytmParams.put("TXN_AMOUNT",String.valueOf(amout));
-        paytmParams.put("WEBSITE",WEBSITE);
+        paytmParams.put("CALLBACK_URL", WALLET_CALLBACK_URL);
+        paytmParams.put("CHANNEL_ID", CHANNEL_ID);
+        paytmParams.put("CUST_ID", Common.currentUser.getId().toString());
+        paytmParams.put("EMAIL", "testt@gmail.com");
+        paytmParams.put("INDUSTRY_TYPE_ID", INDUSTRY_TYPE_ID);
+        paytmParams.put("MID", MID);
+        paytmParams.put("MOBILE_NO", "4558852");
+        paytmParams.put("ORDER_ID", orderId);
+        paytmParams.put("TXN_AMOUNT", String.valueOf(amout));
+        paytmParams.put("WEBSITE", WEBSITE);
 
 
-        String checkSum =  CheckSumServiceHelper.getCheckSumServiceHelper().genrateCheckSum(MERCHANT_KEY, paytmParams);
+        String checkSum = CheckSumServiceHelper.getCheckSumServiceHelper().genrateCheckSum(MERCHANT_KEY, paytmParams);
 
 
-        model.addAttribute("CALLBACK_URL",WALLET_CALLBACK_URL);
-        model.addAttribute("CHANNEL_ID",CHANNEL_ID);
-        model.addAttribute("CUST_ID",String.valueOf(Common.currentUser.getId()));
-        model.addAttribute("EMAIL","testt@gmail.com");
-        model.addAttribute("INDUSTRY_TYPE_ID",INDUSTRY_TYPE_ID);
-        model.addAttribute("MID",MID);
-        model.addAttribute("MOBILE_NO",4558852);
+        model.addAttribute("CALLBACK_URL", WALLET_CALLBACK_URL);
+        model.addAttribute("CHANNEL_ID", CHANNEL_ID);
+        model.addAttribute("CUST_ID", String.valueOf(Common.currentUser.getId()));
+        model.addAttribute("EMAIL", "testt@gmail.com");
+        model.addAttribute("INDUSTRY_TYPE_ID", INDUSTRY_TYPE_ID);
+        model.addAttribute("MID", MID);
+        model.addAttribute("MOBILE_NO", 4558852);
         model.addAttribute("ORDER_ID", orderId);
-        model.addAttribute("TXN_AMOUNT",String.valueOf(amout));
-        model.addAttribute("WEBSITE",WEBSITE);
-        model.addAttribute("CHECKSUMHASH",checkSum);
+        model.addAttribute("TXN_AMOUNT", String.valueOf(amout));
+        model.addAttribute("WEBSITE", WEBSITE);
+        model.addAttribute("CHECKSUMHASH", checkSum);
         // model.addAllAttributes(paytmParams);
 
 
@@ -411,27 +442,25 @@ public class Cont {
 
         String paytmChecksum = "";
 
-        Map<String, String> mapData = new  TreeMap<String,String>();
-       // mapData.put("CHECKSUMHASH",generateCheckSum());
+        Map<String, String> mapData = new TreeMap<String, String>();
+        // mapData.put("CHECKSUMHASH",generateCheckSum());
 
-        TreeMap<String, String> paytmParams = new  TreeMap<String,String>();
+        TreeMap<String, String> paytmParams = new TreeMap<String, String>();
 
-        for (Map.Entry<String, String> entry : mapData.entrySet())
-        {
-            if(entry.getKey().equals("CHECKSUMHASH")){
+        for (Map.Entry<String, String> entry : mapData.entrySet()) {
+            if (entry.getKey().equals("CHECKSUMHASH")) {
                 paytmChecksum = entry.getKey();
-            }else{
+            } else {
                 paytmParams.put(entry.getKey(), entry.getValue());
             }
         }
 
 
-
-        try{
+        try {
 
             isValideChecksum = CheckSumServiceHelper.getCheckSumServiceHelper().verifycheckSum(MERCHANT_KEY, paytmParams, paytmChecksum);
 
-            System.out.println("This is paytm checksum"+ paytmChecksum);
+            System.out.println("This is paytm checksum" + paytmChecksum);
 
             System.out.println(isValideChecksum);
 
@@ -442,7 +471,7 @@ public class Cont {
             // If everything is fine then mark that transaction as successful into your DB.
 
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -458,72 +487,63 @@ public class Cont {
         ModelAndView modelAndView = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Common.currentUser = userService.findByUsername(auth.getName());
-        if (Common.currentUser != null){
-            model.addAttribute("user",Common.currentUser);
+        if (Common.currentUser != null) {
+            model.addAttribute("user", Common.currentUser);
         }
 
         Map<String, String[]> mapData = request.getParameterMap();
-        TreeMap<String,String> parameters = new TreeMap<String,String>();
-        String paytmChecksum =  "";
-        while(paramNames.hasMoreElements()) {
-            String paramName = (String)paramNames.nextElement();
-            if(paramName.equals("CHECKSUMHASH")){
+        TreeMap<String, String> parameters = new TreeMap<String, String>();
+        String paytmChecksum = "";
+        while (paramNames.hasMoreElements()) {
+            String paramName = (String) paramNames.nextElement();
+            if (paramName.equals("CHECKSUMHASH")) {
                 paytmChecksum = mapData.get(paramName)[0];
-            }else{
-                parameters.put(paramName,mapData.get(paramName)[0]);
+            } else {
+                parameters.put(paramName, mapData.get(paramName)[0]);
             }
         }
         boolean isValideChecksum = false;
-        String outputHTML="";
-        try{
-            isValideChecksum = CheckSumServiceHelper.getCheckSumServiceHelper().verifycheckSum(MERCHANT_KEY,parameters,paytmChecksum);
-            if(isValideChecksum && parameters.containsKey("RESPCODE")){
-                if(parameters.get("RESPCODE").equals("01")){
+        String outputHTML = "";
+        try {
+            isValideChecksum = CheckSumServiceHelper.getCheckSumServiceHelper().verifycheckSum(MERCHANT_KEY, parameters, paytmChecksum);
+            if (isValideChecksum && parameters.containsKey("RESPCODE")) {
+                if (parameters.get("RESPCODE").equals("01")) {
                     outputHTML = parameters.toString();
-                }else{
-                    outputHTML="<b>Payment Failed.</b>";
+                } else {
+                    outputHTML = "<b>Payment Failed.</b>";
                 }
-            }else{
-                outputHTML="<b>Checksum mismatched.</b>";
+            } else {
+                outputHTML = "<b>Checksum mismatched.</b>";
             }
-        }catch(Exception e){
-            outputHTML=e.toString();
+        } catch (Exception e) {
+            outputHTML = e.toString();
 
         }
         System.out.println(outputHTML);
-        model.addAttribute("errorMsg","true");
+        model.addAttribute("errorMsg", "true");
 
         String respMsg = parameters.get("STATUS");
         String orderId = parameters.get("ORDERID");
         String amount = parameters.get("TXNAMOUNT");
         String date = parameters.get("TXNDATE");
-        String finalDate = date.substring(0,11);
-        if (respMsg.equalsIgnoreCase("TXN_SUCCESS")){
+        String finalDate = date.substring(0, 11);
+        if (respMsg.equalsIgnoreCase("TXN_SUCCESS")) {
             model.addAttribute("orderid", orderId);
             model.addAttribute("amt", amount);
             model.addAttribute("date", finalDate);
             cartService.clearCart(Common.currentUser.getUsername());
 
             modelAndView.setViewName("orderConfirmationPage");
-        }
-        else {
-            modelAndView.addObject("em","true");
+        } else {
+            modelAndView.addObject("em", "true");
 
             modelAndView.setViewName("redirect:/home/cart");
 
         }
 
 
-
-
-
-
-
         return modelAndView;
     }
-
-
-
 
 
     @ResponseBody
@@ -533,73 +553,64 @@ public class Cont {
         ModelAndView modelAndView = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Common.currentUser = userService.findByUsername(auth.getName());
-        if (Common.currentUser != null){
-            model.addAttribute("user",Common.currentUser);
+        if (Common.currentUser != null) {
+            model.addAttribute("user", Common.currentUser);
         }
 
         Map<String, String[]> mapData = request.getParameterMap();
-        TreeMap<String,String> parameters = new TreeMap<String,String>();
-        String paytmChecksum =  "";
-        while(paramNames.hasMoreElements()) {
-            String paramName = (String)paramNames.nextElement();
-            if(paramName.equals("CHECKSUMHASH")){
+        TreeMap<String, String> parameters = new TreeMap<String, String>();
+        String paytmChecksum = "";
+        while (paramNames.hasMoreElements()) {
+            String paramName = (String) paramNames.nextElement();
+            if (paramName.equals("CHECKSUMHASH")) {
                 paytmChecksum = mapData.get(paramName)[0];
-            }else{
-                parameters.put(paramName,mapData.get(paramName)[0]);
+            } else {
+                parameters.put(paramName, mapData.get(paramName)[0]);
             }
         }
         boolean isValideChecksum = false;
-        String outputHTML="";
-        try{
-            isValideChecksum = CheckSumServiceHelper.getCheckSumServiceHelper().verifycheckSum(MERCHANT_KEY,parameters,paytmChecksum);
-            if(isValideChecksum && parameters.containsKey("RESPCODE")){
-                if(parameters.get("RESPCODE").equals("01")){
+        String outputHTML = "";
+        try {
+            isValideChecksum = CheckSumServiceHelper.getCheckSumServiceHelper().verifycheckSum(MERCHANT_KEY, parameters, paytmChecksum);
+            if (isValideChecksum && parameters.containsKey("RESPCODE")) {
+                if (parameters.get("RESPCODE").equals("01")) {
                     outputHTML = parameters.toString();
-                }else{
-                    outputHTML="<b>Payment Failed.</b>";
+                } else {
+                    outputHTML = "<b>Payment Failed.</b>";
                 }
-            }else{
-                outputHTML="<b>Checksum mismatched.</b>";
+            } else {
+                outputHTML = "<b>Checksum mismatched.</b>";
             }
-        }catch(Exception e){
-            outputHTML=e.toString();
+        } catch (Exception e) {
+            outputHTML = e.toString();
 
         }
         System.out.println(outputHTML);
-        model.addAttribute("errorMsg","true");
+        model.addAttribute("errorMsg", "true");
 
         String respMsg = parameters.get("STATUS");
         String orderId = parameters.get("ORDERID");
         String amount = parameters.get("TXNAMOUNT");
         String date = parameters.get("TXNDATE");
         double amt = Double.parseDouble(amount) + Double.parseDouble(Common.currentUser.getWallet());
-        String finalDate = date.substring(0,11);
-        if (respMsg.equalsIgnoreCase("TXN_SUCCESS")){
+        String finalDate = date.substring(0, 11);
+        if (respMsg.equalsIgnoreCase("TXN_SUCCESS")) {
             model.addAttribute("orderid", orderId);
             model.addAttribute("amt", amount);
             model.addAttribute("date", finalDate);
-           userService.updateWallet(String.valueOf(amt),Common.currentUser.getUsername());
+            userService.updateWallet(String.valueOf(amt), Common.currentUser.getUsername());
 
             modelAndView.setViewName("redirect:/home");
-        }
-        else {
-            modelAndView.addObject("em","true");
+        } else {
+            modelAndView.addObject("em", "true");
 
             modelAndView.setViewName("redirect:/home");
 
         }
-
-
-
-
-
 
 
         return modelAndView;
     }
-
-
-
 
 
 }
