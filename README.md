@@ -15,7 +15,7 @@ username: poi, password: poi, role:user
 
 ## Known Issues
 * Can't track order yet (Working on it. I'll update the repository ASAP)
-* Registration
+
 
 ## Versioning
 * Initial Version
